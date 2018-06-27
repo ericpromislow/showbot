@@ -7,8 +7,17 @@ target = ENV['TARGET'] or die("build.sh.erb: TARGET not set") %>{
 <% if target == 'firefox' %>
       "browser_style": true,
 <% end %>
-    "default_title": "Showbot",
+    "default_title": "Showbot"
   },
+  "background": {
+    "scripts": ["content/browser-polyfill.min.js", "background_scripts/watch_tabs.js"]
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://twitter.com/*"],
+      "js": ["content/showBots.js"]
+    }
+  ],
   "default_locale": "en",
   "description": "Expose twitter bots",
 <% if target == 'firefox' %>
@@ -27,6 +36,7 @@ target = ENV['TARGET'] or die("build.sh.erb: TARGET not set") %>{
   "name": "Showbot",
   "permissions": [
     "activeTab",
+    "tabs",
     "*://twitter.com/*",
     "*://botometer.iuni.iu.edu/*",
     "storage"

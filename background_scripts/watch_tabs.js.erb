@@ -1,0 +1,45 @@
+/* Retrieve any previously set cookie and send to content script */
+
+var globalThing =
+<% if ENV['TARGET'] == 'firefox' %>
+browser
+<% else %>
+browser
+<% end %>
+;
+
+function getActiveTab() {
+    return globalThing.tabs.query({active: true, currentWindow: true});
+}
+
+async function onTabChange() {
+    try {
+        debugger;
+        let tabs = await getActiveTab();
+        let tab = tabs[0];
+        console.log(`QQQ: changing to tab ${tab.url}`);
+        if (/:\/\/.*twitter.com/.test(tab.url)) {
+            await globalThing.tabs.executeScript(tab.id, { file: "/content/showBots.js",
+                        runAt: "document_end"} );
+            let response = globalThing.tabs.sendMessage(tab.id, {"action": "analyze"});
+            console.log('QQQ: got a response from the content script...');
+            response.then((message) => {
+                    if (message.action != "analyze" || message.result !== true ||
+                        Object.keys(message).length != 2) {
+                        console.table(message);
+                    }
+                }).catch((err) => {
+                        console.log(`showbot: search result failed: ${err}`);
+                    });
+        }
+    } catch(ex) {
+        console.log(`QQQ: error in onTabChange: ${ex.message}`);
+    }
+}
+
+// update when the tab is updated
+globalThing.tabs.onUpdated.addListener(onTabChange);
+// update when the tab is activated
+globalThing.tabs.onActivated.addListener(onTabChange);
+
+alert('yop loaded watch_tabs.js');

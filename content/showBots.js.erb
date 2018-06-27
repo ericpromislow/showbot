@@ -1,0 +1,75 @@
+
+<% if ENV['TARGET'] == 'firefox' %>
+browser.
+<% else %>
+chrome.
+<% end %>
+runtime.onMessage.addListener(onMessage);
+
+function onMessage(message, sender, sendResponse) {
+    console.log(`Got a message:`);
+    if (message.action == 'analyze') {
+        message.result = walkNodes();
+    } else {
+        console.log(`Not supporting message`);
+        console.table(message);
+        message.result = false;
+    }
+    sendResponse(message);
+}
+
+function walkNodes() {
+    var contextNode = document.documentElement;
+    var namespaceResolver =
+        document.createNSResolver(contextNode.ownerDocument == null
+                                  ? contextNode.documentElement
+                                  : contextNode.ownerDocument.documentElement);
+    var resultType1 = XPathResult.ANY_TYPE;
+    var pattern1 = '//li[contains(@id, "stream-item-tweet")]/div[contains(@class, "tweet")]';
+    var nodeSet1 = document.evaluate(pattern1, contextNode, namespaceResolver,
+                                     resultType1, null);
+    var tweetNodes = [];
+    var tweetNode;
+    while (tweetNode = nodeSet1.iterateNext()) {
+        tweetNodes.push(tweetNode);
+    }
+    tweetNodes.forEach(function(tweetNode) {
+            var resultType2 = XPathResult.ANY_TYPE;
+            var pattern2 = './/span[contains(@class, "username")]';
+            let spanNodeSet = document.evaluate(pattern2, tweetNode, namespaceResolver,
+                                                resultType2, null);
+            let spanNode = spanNodeSet.iterateNext();
+            let usernameNodeSet = document.evaluate('./b', spanNode, namespaceResolver,
+                                                    resultType2, null);
+            let usernameNode = usernameNodeSet.iterateNext();
+            if (!/<!.*!>/.test(usernameNode.textContent)) {
+                // First time through
+                spanNode.style.borderColor = 'red';
+                spanNode.style.borderWidth = '1px';
+                spanNode.style.borderStyle = 'solid';
+                usernameNode.textContent = "<! " + usernameNode.textContent + " !>";
+            }
+        }
+        );
+    return true;
+}
+
+/*
+// Now monitor the DOM for additions and substitute emoji into new nodes.
+// @see https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver.
+const observer = new MutationObserver((mutations) => {
+  mutations.forEach((mutation) => {
+    if (mutation.addedNodes && mutation.addedNodes.length > 0) {
+        //TODO: What are the nodes?
+        //console.log('got a mutation ... walkNodes();');
+    }
+  });
+});
+observer.observe(document.body, {
+  childList: true,
+  subtree: true
+});
+
+    
+    
+*/

@@ -5,7 +5,7 @@ TDIR=build/${TARGET}
 TBDIR=$(TDIR)/build
 ZIPPER=$(TBDIR)/showbot-$(TARGET)-$(VERSION).zip
 TDIRS=$(TDIR) $(TDIR)/build $(TDIR)/_locales $(TDIR)/_locales/en $(TDIR)/icons \
-	$(TDIR)/content
+	$(TDIR)/content $(TDIR)/background_scripts
 
 SOURCES=$(TDIR) $(TBDIR) $(TDIR)/_locales $(TDIR)/_locales/en $(TDIR)/icons  \
 		$(TDIR)/_locales/en/messages.json \
@@ -18,6 +18,7 @@ SOURCES=$(TDIR) $(TBDIR) $(TDIR)/_locales $(TDIR)/_locales/en $(TDIR)/icons  \
 		$(TDIR)/README.md  \
 		$(TDIR)/build.sh  \
 		$(TDIR)/manifest.json  \
+		$(TDIR)/background_scripts/watch_tabs.js \
 		$(TDIR)/content/showBots.js \
 		$(TDIR)/content/jquery-3.2.1.min.js \
 		$(TDIR)/content/browser-polyfill.min.js
@@ -40,7 +41,7 @@ $(ZIPPER): $(SOURCES)
 build:
 	mkdir -p $@
 
-$(TDIR) $(TDIR)/build $(TDIR)/_locales $(TDIR)/_locales/en $(TDIR)/icons $(TDIR)/content:
+$(TDIR) $(TDIR)/build $(TDIR)/_locales $(TDIR)/_locales/en $(TDIR)/icons $(TDIR)/content $(TDIR)/background_scripts:
 	mkdir -p $@
 
 $(TDIR)/_locales/en/messages.json: _locales/en/messages.json
@@ -84,5 +85,8 @@ $(TDIR)/content/showBots.js: content/showBots.js.erb
 	TARGET=${TARGET} VERSION=${VERSION} erb -T 2 $< > $@
 	node -c $@
 
+$(TDIR)/background_scripts/watch_tabs.js: background_scripts/watch_tabs.js.erb
+	TARGET=${TARGET} VERSION=${VERSION} erb -T 2 $< > $@
+	node -c $@
 
 

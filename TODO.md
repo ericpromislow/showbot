@@ -4,9 +4,9 @@
 
 [x] Create repository
 
-[] Set up same build system as tabhunter to target firefox and chrome
+[x] Set up same build system as tabhunter to target firefox and chrome
 
-[] POC: content-script to highlight user names in twitter feed
+[x] POC: content-script to highlight user names in twitter feed
 
 [] sign up for botometer.iuni.iu.edu account
 
