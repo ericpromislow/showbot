@@ -1,0 +1,36 @@
+<%# -*- Mode: javascript; indent-tab-mode: nil; js-indent-level: 2 -*- -%>
+<% 
+version = ENV['VERSION'] or die("showbot/manifest.json.erb: VERSION not set")
+target = ENV['TARGET'] or die("build.sh.erb: TARGET not set") %>{
+  "author": "Eric Promislow",
+  "browser_action": {
+<% if target == 'firefox' %>
+      "browser_style": true,
+<% end %>
+    "default_title": "Showbot",
+  },
+  "default_locale": "en",
+  "description": "Expose twitter bots",
+<% if target == 'firefox' %>
+    "developer": {
+      "name": "Eric Promislow",
+      "url": "https://github.com/ericpromislow/showbot"
+    },
+<% end %>
+    "homepage_url": "https://github.com/ericpromislow/showbot",
+  "icons": {
+    "48": "icons/sb-48x48.png",
+    "96": "icons/sb-96x96.png",
+    "128": "icons/sb-128x128.png"
+  },
+  "manifest_version": 2,
+  "name": "Showbot",
+  "permissions": [
+    "activeTab",
+    "*://twitter.com/*",
+    "*://botometer.iuni.iu.edu/*",
+    "storage"
+  ],
+  "short_name": "Showbot",
+  "version": "<%= version %>"
+}
